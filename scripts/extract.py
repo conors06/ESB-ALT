@@ -21,3 +21,4 @@ df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'])
 
 print(df)
 #print(df.columns)
+# go from index 0 to 48 for a day
