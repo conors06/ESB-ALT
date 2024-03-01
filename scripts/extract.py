@@ -41,7 +41,7 @@ cal_start.grid(row=0, column=0, padx=10, pady=10)
 cal_end.grid(row=0, column=1, padx=10, pady=10)
 
 # Create calculate button
-calculate_button = tk.Button(root, text="Calculate", command=calculate_kW_usage)
+calculate_button = tk.Button(root, text="Calculate", command=calculate_kW_usage )
 calculate_button.grid(row=1, columnspan=2, padx=10, pady=10, )
 
 # Create result label
