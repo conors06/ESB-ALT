@@ -2,8 +2,8 @@ import pandas as pd
 import json
 from datetime import datetime, timedelta
 import os
-
-
+import tkinter as tk
+from tkcalendar import Calendar, DateEntry
 
 try:
     with open('json_data.json') as file:
@@ -14,12 +14,31 @@ except FileNotFoundError:
     with open(file_path) as file:
         data = json.load(file)
 
-daystoshow = int(input("Enter number of days to show: ")) * 48
-df = pd.DataFrame(data)
-df.drop(columns=['MPRN', 'Read Type' ,'Meter Serial Number'], inplace=True)
-df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
-df['Read Value'] = pd.to_numeric(df['Read Value'])
-wantedkw_sum = df['Read Value'].iloc[0:daystoshow].sum().round()
-print("Your kW usage is:", wantedkw_sum,'KW')
-#print(df)
-#print(df.columns)
+
+root = tk.Tk()
+root.title("Date Range Selector")
+
+
+def calculate_kW_usage():
+    start_date = datetime.combine(cal_start.get_date(), datetime.min.time())
+    end_date = datetime.combine(cal_end.get_date(), datetime.min.time()) + timedelta(days=1)
+    
+    df = pd.DataFrame(data)
+    df.drop(columns=['MPRN', 'Read Type', 'Meter Serial Number'], inplace=True)
+    df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
+    df['Read Value'] = pd.to_numeric(df['Read Value'])
+    
+    date_range = (df['Read Date and End Time'] >= start_date) & (df['Read Date and End Time'] < end_date)
+    wantedkw_sum = df.loc[date_range, 'Read Value'].sum().round()
+    result_label.config(text="Your kW usage is: {} KW".format(wantedkw_sum))
+
+
+cal_start = DateEntry(root, width=12, background='darkblue', foreground='white', date_pattern='dd/mm/yyyy')
+cal_end = DateEntry(root, width=12, background='darkblue', foreground='white', date_pattern='dd/mm/yyyy')
+cal_start.grid(row=0, column=0, padx=10, pady=10)
+cal_end.grid(row=0, column=1, padx=10, pady=10)
+calculate_button = tk.Button(root, text="Calculate", command=calculate_kW_usage)
+calculate_button.grid(row=1, columnspan=2, padx=10, pady=10)
+result_label = tk.Label(root, text="")
+result_label.grid(row=2, columnspan=2, padx=10, pady=10)
+root.mainloop()
