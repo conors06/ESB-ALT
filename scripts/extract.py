@@ -17,9 +17,9 @@ except FileNotFoundError:
 daystoshow = int(input("Enter number of days to show: ")) * 48
 df = pd.DataFrame(data)
 df.drop(columns=['MPRN', 'Read Type' ,'Meter Serial Number'], inplace=True)
-df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'])
+df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
 df['Read Value'] = pd.to_numeric(df['Read Value'])
-wantedkw_sum = df['Read Value'].iloc[0:daystoshow].sum()
-print(wantedkw_sum)
+wantedkw_sum = df['Read Value'].iloc[0:daystoshow].sum().round()
+print("Your kW usage is:", wantedkw_sum,'KW')
 #print(df)
 #print(df.columns)
