@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from datetime import datetime, timedelta
 import os
+import matplotlib.pyplot as plt
 
 
 
@@ -21,6 +22,7 @@ df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'])
 df['Read Value'] = pd.to_numeric(df['Read Value'])
 wantedkw_sum = df['Read Value'].iloc[0:daystoshow].sum()
 print(wantedkw_sum)
+plt.plot(df['Read Value'].iloc[0:daystoshow])
 #print(df)
 #print(df.columns)
 # go from index 0 to 48 for a day
