@@ -80,7 +80,7 @@ def csv_response_to_json(csv_file):
     csv_reader = csv.DictReader(csv_file)
     for row in csv_reader:
         my_json.append(row)
-    with open("json_data.json", "w", encoding="utf-8") as jsonf:
+    with open("../scripts/json_data.json", "w", encoding="utf-8") as jsonf:
         json_out = json.dumps(my_json, indent=2)
         jsonf.write(json_out)
     print("[+] end of JSON OUT.", json_out)
