@@ -142,14 +142,10 @@ def process_data():
     email = data.get('email')
     print(email)
     password = data.get('password')
-    print(password)
-
-    # Perform the necessary processing with the data
+    print(password) 
     esbnumber = load_smart_meter_stats_v2(email, password, mprn)
     total_kw = calculate_kW_usage(startTime, endTime)
-    
-    # Return a response
-    return {'esbnumber': esbnumber, 'total_kw': total_kw}
+    return { 'total_kw': total_kw}
 
 if __name__ == '__main__':
     app.run()
