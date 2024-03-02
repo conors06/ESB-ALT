@@ -1,3 +1,4 @@
+from flask import Flask, request
 import pandas as pd
 import json
 from datetime import datetime, timedelta, timezone
@@ -7,11 +8,10 @@ from bs4 import BeautifulSoup
 import re
 import csv
 
+app = Flask(__name__)
 
-#meter_mprn = "10005513593"
-#esb_user_name = "conorwstorey@gmail.com"
-#esb_password = "MarlfieldMuffin17??"
-
+if os.path.exists('../json_data.json'):
+    os.remove('../json_data.json')
 def load_esb_data(user, password, mpnr, start_date):
     print("[+] open session ...")
     s = requests.Session()
@@ -76,7 +76,6 @@ def load_esb_data(user, password, mpnr, start_date):
     json_data = csv_response_to_json(data_decoded)
     return json_data
 
-
 def csv_response_to_json(csv_file):
     print("[+] creating JSON file from CSV ...")
     my_json = []
@@ -90,7 +89,6 @@ def csv_response_to_json(csv_file):
     print("[+] end of JSON OUT, returning value ...")
     return json_out
 
-
 def parse_date(date_str):
     print("[+] parsing some data fields ...")
     if len(date_str) == 19:
@@ -100,8 +98,6 @@ def parse_date(date_str):
         tz_offset = int(date_str[-6:-3])
         tz = timezone(timedelta(hours=tz_offset))
         return dt.replace(tzinfo=tz)
-
-
 def load_smart_meter_stats_v2(user, password, mpnr):
     today_ = datetime.today()
     smart_meter_data = load_esb_data(user, password, mpnr, today_)
@@ -109,26 +105,22 @@ def load_smart_meter_stats_v2(user, password, mpnr):
     print("[++] end of smart_meter_data")
     return smart_meter_data
 
-
-esbnumber = load_smart_meter_stats_v2(esb_user_name, esb_password, meter_mprn)
-print("[Done]: ", esbnumber)
-
-try:
-    with open('json_data.json') as file:
-        data = json.load(file)
-except FileNotFoundError:
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_directory, 'json_data.json')
-    with open(file_path) as file:
-        data = json.load(file)
-
-# Function to calculate and display kW usage
 def calculate_kW_usage(start_date_str, end_date_str):
     start_date = datetime.strptime(start_date_str, '%d/%m/%y')
     end_date = datetime.strptime(end_date_str, '%d/%m/%y') + timedelta(days=1)
+    try:
+        with open('../json_data.json') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        print(current_directory)
+        file_path = os.path.join(current_directory, '../json_data.json')
+        with open(file_path) as file:
+            data = json.load(file)
 
     df = pd.DataFrame(data)
     df.drop(columns=['MPRN', 'Read Type', 'Meter Serial Number'], inplace=True)
+    print(df)
     df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
     df['Read Value'] = pd.to_numeric(df['Read Value'])
 
@@ -136,8 +128,28 @@ def calculate_kW_usage(start_date_str, end_date_str):
     wantedkw_sum = df.loc[date_range, 'Read Value'].sum().round()
     return wantedkw_sum
 
-#start_input = input("Enter start date (dd/mm/yy): ")
-#end_input = input("Enter end date (dd/mm/yy): ")
+@app.route('/', methods=['POST'])
+def process_data():
+    data = request.get_json()
 
-total_kw = calculate_kW_usage(start_input, end_input)
-print("Total kW usage:", total_kw)
+    # Extract the necessary data from the request payload
+    startTime = data.get('startTime')
+    print(startTime)
+    endTime = data.get('endTime')
+    print(endTime)
+    mprn = data.get('mprn')
+    print(mprn)
+    email = data.get('email')
+    print(email)
+    password = data.get('password')
+    print(password)
+
+    # Perform the necessary processing with the data
+    esbnumber = load_smart_meter_stats_v2(email, password, mprn)
+    total_kw = calculate_kW_usage(startTime, endTime)
+    
+    # Return a response
+    return {'esbnumber': esbnumber, 'total_kw': total_kw}
+
+if __name__ == '__main__':
+    app.run()
