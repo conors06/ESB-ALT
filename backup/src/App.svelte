@@ -1,17 +1,17 @@
-<script lang="ts">
+<script>
   import { onMount } from 'svelte';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
-  let startTime: string = '';
-  let endTime: string = '';
-  let mprn: string = '';
-  let email: string = '';
-  let password: string = '';
-  let totalKw: number | null = null;
+  let startTime = '';
+  let endTime = '';
+  let mprn = '';
+  let email = '';
+  let password = '';
+  let totalKw = null;
 
-  async function handleSubmit(event: Event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const data = {
@@ -41,7 +41,7 @@
     }
   }
 
-  function formatDate(dateString: string) {
+  function formatDate(dateString) {
     const [year, month, day] = dateString.split('-');
     return `${day}/${month}/${year.slice(-2)}`;
   }
@@ -60,6 +60,10 @@
     align-items: center;
   }
 
+  input[type="date"],
+  input[type="mprn"],
+  input[type="email"],
+  input[type="password"],
   button {
     border-radius: 10px;
     padding: 8px;
@@ -68,7 +72,7 @@
 </style>
 
 <form on:submit={handleSubmit}>
-  <label for="start-time">Start Time Test</label>
+  <label for="start-time">Start Time</label>
   <input type="date" id="start-time" bind:value={startTime} required>
 
   <label for="end-time">End Time</label>

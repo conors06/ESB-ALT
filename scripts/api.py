@@ -12,7 +12,6 @@ import logging
 
 app = Flask(__name__)
 CORS(app)
-logging.basicConfig(level=logging.DEBUG)
 
 if os.path.exists('../json_data.json'):
     os.remove('../json_data.json')
