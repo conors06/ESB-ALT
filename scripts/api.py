@@ -1,4 +1,5 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 import json
 from datetime import datetime, timedelta, timezone
@@ -7,8 +8,11 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import csv
+import logging
 
 app = Flask(__name__)
+CORS(app)
+logging.basicConfig(level=logging.DEBUG)
 
 if os.path.exists('../json_data.json'):
     os.remove('../json_data.json')
@@ -145,6 +149,7 @@ def process_data():
     print(password) 
     esbnumber = load_smart_meter_stats_v2(email, password, mprn)
     total_kw = calculate_kW_usage(startTime, endTime)
+    print(total_kw)
     return { 'total_kw': total_kw}
 
 if __name__ == '__main__':

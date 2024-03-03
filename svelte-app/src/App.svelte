@@ -9,23 +9,50 @@
   let mprn = '';
   let email = '';
   let password = '';
+  let totalKw = null;
 
-  function handleSubmit() {
-    // Perform necessary validations and data manipulation
+  async function handleSubmit(event) {
+    event.preventDefault();
 
-    // Create a payload object with the form data
-    const payload = {
-      startTime,
-      endTime,
+    const data = {
+      startTime: formatDate(startTime),
+      endTime: formatDate(endTime),
       mprn,
       email,
       password
     };
 
-    // Dispatch an event with the payload
-    dispatch('formSubmit', payload);
+    const response = await fetch('http://127.0.0.1:5000/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      totalKw = result.total_kw; // Update the variable name to match the response field name
+      console.log(result);
+      // Handle the result as needed
+    } else {
+      console.error('Error:', response.status);
+      // Handle the error
+    }
+  }
+
+  function formatDate(dateString) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year.slice(-2)}`;
+  }
+
+  $: {
+    if (totalKw !== null) {
+      console.log(totalKw); // Make sure the value is correct in the console
+    }
   }
 </script>
+
 <style>
   form {
     display: flex;
@@ -52,7 +79,7 @@
   <input type="date" id="end-time" bind:value={endTime} required>
 
   <label for="mprn">MPRN</label>
-  <input type="mprn" id="mprn" bind:value={mprn} required>
+  <input type="text" id="mprn" bind:value={mprn} required>
 
   <label for="email">Email</label>
   <input type="email" id="email" bind:value={email} required>
@@ -63,4 +90,6 @@
   <button type="submit">Submit</button>
 </form>
 
-
+{#if totalKw !== null}
+  <p>Total kW: {totalKw}</p>
+{/if}
