@@ -6,11 +6,12 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import csv
+import plotly.graph_objects as go
 
 
-#meter_mprn = "10005513593"
-#esb_user_name = "conorwstorey@gmail.com"
-#esb_password = "MarlfieldMuffin17??"
+meter_mprn = "10005513593"
+esb_user_name = "conorwstorey@gmail.com"
+esb_password = "MarlfieldMuffin17??"
 
 def load_esb_data(user, password, mpnr, start_date):
     print("[+] open session ...")
@@ -133,11 +134,21 @@ def calculate_kW_usage(start_date_str, end_date_str):
     df['Read Value'] = pd.to_numeric(df['Read Value'])
 
     date_range = (df['Read Date and End Time'] >= start_date) & (df['Read Date and End Time'] < end_date)
-    wantedkw_sum = df.loc[date_range, 'Read Value'].sum().round()
-    return wantedkw_sum
+    wanted_data = df.loc[date_range, ['Read Date and End Time', 'Read Value']]
 
-#start_input = input("Enter start date (dd/mm/yy): ")
-#end_input = input("Enter end date (dd/mm/yy): ")
+    return wanted_data
+
+start_input = input("Enter start date (dd/mm/yy): ")
+end_input = input("Enter end date (dd/mm/yy): ")
+
+wanted_data = calculate_kW_usage(start_input, end_input)
+
+# Create a plotly figure
+fig = go.Figure(data=go.Scatter(x=wanted_data['Read Date and End Time'], y=wanted_data['Read Value']))
+fig.update_layout(title='Energy Usage Over Time', xaxis_title='Date and Time', yaxis_title='kW Usage')
+
+# Display the figure
+fig.show()
 
 total_kw = calculate_kW_usage(start_input, end_input)
 print("Total kW usage:", total_kw)
