@@ -135,8 +135,14 @@ def calculate_kW_usage(start_date_str, end_date_str):
 
     date_range = (df['Read Date and End Time'] >= start_date) & (df['Read Date and End Time'] < end_date)
     wanted_data = df.loc[date_range, ['Read Date and End Time', 'Read Value']]
+    first_date = df['Read Date and End Time'].min()
+    print("First Date:", first_date)
+    last_date = df['Read Date and End Time'].max()
+    print("Last Date:", last_date)
 
     return wanted_data
+
+
 
 start_input = input("Enter start date (dd/mm/yy): ")
 end_input = input("Enter end date (dd/mm/yy): ")
