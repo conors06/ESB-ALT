@@ -1,13 +1,6 @@
 <script lang="ts">
-	import { ModeWatcher } from 'mode-watcher';
-  import { onMount } from 'svelte';
-  import { setMode } from 'mode-watcher';
-  onMount(() => {
-    setMode('dark');
-  });
+  import "../app.pcss";
+  import { ModeWatcher } from "mode-watcher";
 </script>
-
-<main>
-  <ModeWatcher defaultMode="dark" />
-  <slot />
-</main>
+<ModeWatcher />
+<slot />
