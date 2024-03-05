@@ -6,8 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import csv
-import plotly.graph_objects as go
-
+import matplotlib.pyplot as plt, mpld3
 
 meter_mprn = "10005513593"
 esb_user_name = "conorwstorey@gmail.com"
@@ -144,17 +143,19 @@ def calculate_kW_usage(start_date_str, end_date_str):
 
 
 
-start_input = input("Enter start date (dd/mm/yy): ")
-end_input = input("Enter end date (dd/mm/yy): ")
+start_input = "22/02/24"
+end_input = "29/02/24"
 
 wanted_data = calculate_kW_usage(start_input, end_input)
 
-# Create a plotly figure
-fig = go.Figure(data=go.Scatter(x=wanted_data['Read Date and End Time'], y=wanted_data['Read Value']))
-fig.update_layout(title='Energy Usage Over Time', xaxis_title='Date and Time', yaxis_title='kW Usage')
 
-# Display the figure
-fig.show()
-
+fig, ax = plt.subplots()
+ax.plot(wanted_data['Read Date and End Time'], wanted_data['Read Value'])
+ax.set_title('Energy Usage Over Time')
+ax.set_xlabel('Date and Time')
+ax.set_ylabel('kW Usage')
+html_fig = mpld3.fig_to_html(fig)
+print(html_fig)
+mpld3.show()
 total_kw = calculate_kW_usage(start_input, end_input)
 print("Total kW usage:", total_kw)
