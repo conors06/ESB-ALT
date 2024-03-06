@@ -114,6 +114,8 @@ def calculate_kW_usage(startTime, endTime):
     global df
     #start_date = datetime.strptime(start_date_str, '%d/%m/%y')
     #end_date = datetime.strptime(end_date_str, '%d/%m/%y') + timedelta(days=1)
+    start_datetime = datetime.strptime(startTime, '%d/%m/%y')
+    end_datetime = datetime.strptime(endTime, '%d/%m/%y')
     try:
         with open('../json_data.json') as file:
             data = json.load(file)
@@ -123,14 +125,18 @@ def calculate_kW_usage(startTime, endTime):
         file_path = os.path.join(current_directory, '../json_data.json')
         with open(file_path) as file:
             data = json.load(file)
-
+    print(startTime)
+    print(endTime)
     df = pd.DataFrame(data)
     df.drop(columns=['MPRN', 'Read Type', 'Meter Serial Number'], inplace=True)
     print(df)
     df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
     df['Read Value'] = pd.to_numeric(df['Read Value'])
-
-    date_range = (df['Read Date and End Time'] >= startTime) & (df['Read Date and End Time'] < endTime)
+    date_range = (df['Read Date and End Time'] >= start_datetime) & (df['Read Date and End Time'] < end_datetime)
+    #date_range = (df['Read Date and End Time'] >= startTime) & (df['Read Date and End Time'] < endTime)
+    print("Date Range: ", date_range)
+    filtered_df = df[date_range]
+    print(filtered_df)
     wantedkw_sum = df.loc[date_range, 'Read Value'].sum().round()
     print(wantedkw_sum)
     return wantedkw_sum
