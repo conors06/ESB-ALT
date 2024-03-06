@@ -1,1 +1,5 @@
 https://plotly.com/python/templates/
+after 5 minutes of no connection to api delete json
+meter_mprn = "10005513593"
+esb_user_name = "conorwstorey@gmail.com"
+esb_password = "MarlfieldMuffin17??"

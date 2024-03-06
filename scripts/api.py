@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import json
+import time
 from datetime import datetime, timedelta, timezone
 import os
 import requests
@@ -9,10 +10,11 @@ from bs4 import BeautifulSoup
 import re
 import csv
 import logging
+import plotly.graph_objs as go
 
 app = Flask(__name__)
 CORS(app)
-
+df = None
 if os.path.exists('../json_data.json'):
     os.remove('../json_data.json')
 def load_esb_data(user, password, mpnr, start_date):
@@ -108,9 +110,10 @@ def load_smart_meter_stats_v2(user, password, mpnr):
     print("[++] end of smart_meter_data")
     return smart_meter_data
 
-def calculate_kW_usage(start_date_str, end_date_str):
-    start_date = datetime.strptime(start_date_str, '%d/%m/%y')
-    end_date = datetime.strptime(end_date_str, '%d/%m/%y') + timedelta(days=1)
+def calculate_kW_usage(startTime, endTime):
+    global df
+    #start_date = datetime.strptime(start_date_str, '%d/%m/%y')
+    #end_date = datetime.strptime(end_date_str, '%d/%m/%y') + timedelta(days=1)
     try:
         with open('../json_data.json') as file:
             data = json.load(file)
@@ -127,29 +130,58 @@ def calculate_kW_usage(start_date_str, end_date_str):
     df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], dayfirst=True)
     df['Read Value'] = pd.to_numeric(df['Read Value'])
 
-    date_range = (df['Read Date and End Time'] >= start_date) & (df['Read Date and End Time'] < end_date)
+    date_range = (df['Read Date and End Time'] >= startTime) & (df['Read Date and End Time'] < endTime)
     wantedkw_sum = df.loc[date_range, 'Read Value'].sum().round()
+    print(wantedkw_sum)
     return wantedkw_sum
+
+def convert_date_format(date_string):
+    # Parse the date string using the format "%b %d, %Y"
+    date = datetime.strptime(date_string, "%b %d, %Y")
+
+    # Convert the date to the desired format: dd/mm/yy
+    short_date = date.strftime("%d/%m/%y")
+
+    return short_date
 
 @app.route('/', methods=['POST'])
 def process_data():
     data = request.get_json()
 
     # Extract the necessary data from the request payload
-    startTime = data.get('startTime')
+    startTimeIntermediary = data.get('startTime')
+    startTime = convert_date_format(startTimeIntermediary)
     print(startTime)
-    endTime = data.get('endTime')
+    endTimeIntermediary = data.get('endTime')
+    endTime = convert_date_format(endTimeIntermediary)
     print(endTime)
     mprn = data.get('mprn')
     print(mprn)
     email = data.get('email')
     print(email)
     password = data.get('password')
-    print(password) 
+    print(password)
+    #time.sleep(5)
+
     esbnumber = load_smart_meter_stats_v2(email, password, mprn)
     total_kw = calculate_kW_usage(startTime, endTime)
     print(total_kw)
-    return { 'total_kw': total_kw}
+    return {'total_kw': total_kw}
+
+@app.route('/graph', methods=['GET'])
+def get_graph():
+    # Use the global DataFrame
+    global df
+
+    if df is not None:
+        fig = go.Figure(data=go.Scatter(x=df['Read Date and End Time'], y=df['Read Value'], mode='lines'))
+        fig.update_layout(title='Energy Usage Over Time', xaxis_title='Date and Time', yaxis_title='kW Usage')
+        json_data = fig.to_json()
+        print(json_data)
+        fig.show
+        return json_data
+    else:
+        return "'error': 'No data available'"
 
 if __name__ == '__main__':
     app.run()

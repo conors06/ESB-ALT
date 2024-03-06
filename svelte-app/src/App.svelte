@@ -10,6 +10,7 @@
   let email: string = '';
   let password: string = '';
   let totalKw: number | null = null;
+  
 
   async function handleSubmit(event: Event) {
     event.preventDefault();

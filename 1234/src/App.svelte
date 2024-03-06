@@ -2,6 +2,8 @@
   import CalendarIcon from "lucide-svelte/icons/calendar";
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
+  import Terminal from "lucide-svelte/icons/terminal";
+  import * as Alert from "$lib/components/ui/alert";
   import * as Tabs from "$lib/components/ui/tabs";
   import * as Card from "$lib/components/ui/card";
   import { Label } from "$lib/components/ui/label";
@@ -19,23 +21,88 @@
   import { RangeCalendar } from "$lib/components/ui/range-calendar";
   import * as Popover from "$lib/components/ui/popover";
 
-  const df = new DateFormatter("en-US", {
-    dateStyle: "medium"
+  let totalKw: number | null = null;
+  let startDate: string = '';
+let endDate: string = '';
+
+const df = new DateFormatter("en-US", {
+  dateStyle: "medium"
+});
+
+let value: DateRange | undefined = {
+  start: new CalendarDate(2022, 1, 20),
+  end: new CalendarDate(2022, 1, 20).add({ days: 20 })
+};
+
+let startValue: DateValue | undefined = undefined;
+
+$: {
+  if (value && value.start && value.end) {
+    // Update the module-level variables
+    startDate = df.format(value.start.toDate(getLocalTimeZone()));
+    endDate = df.format(value.end.toDate(getLocalTimeZone()));
+
+    console.log(startDate);
+    console.log(endDate);
+  }
+}
+
+let mprnInput: HTMLInputElement;
+let emailInput: HTMLInputElement;
+let passwordInput: HTMLInputElement;
+
+const handleFormSubmit = async (event: Event) => {
+  event.preventDefault();
+
+  emailInput = document.getElementById('email') as HTMLInputElement;
+  mprnInput = document.getElementById('mprn') as HTMLInputElement;
+  passwordInput = document.getElementById('current') as HTMLInputElement;
+
+  console.log(emailInput.value);
+  console.log(mprnInput.value);
+  console.log(passwordInput.value);
+  console.log(startDate); // Use the module-level variable
+  console.log(endDate); // Use the module-level variable
+
+  console.log("Submitting");
+
+  const data = {
+    mprn: mprnInput.value,
+    email: emailInput.value,
+    password: passwordInput.value,
+    startTime: startDate, // Use the module-level variable
+    endTime: endDate // Use the module-level variable
+  };
+
+  const response = await fetch("http://127.0.0.1:5000/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
   });
 
-  let value: DateRange | undefined = {
-    start: new CalendarDate(2022, 1, 20),
-    end: new CalendarDate(2022, 1, 20).add({ days: 20 })
-  };
+  if (response.ok) {
+    const result = await response.json();
+    totalKw = result.total_kw; // Update the variable name to match the response field name
+    console.log(result);
+    // Handle the result as needed
+  } else {
+    console.error('Error:', response.status);
+    // Handle the error
+  }
+};
 
-  let startValue: DateValue | undefined = undefined;
-  const start = today(getLocalTimeZone());
-  const end = start.add({ days: 7 });
+  
 
-  let rangeValue = {
-    start,
-    end
-  };
+  $: {
+    if (totalKw !== null) {
+      console.log(totalKw); // Make sure the value is correct in the console
+    }
+  }
+
+
+  
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-screen relative">
@@ -51,8 +118,44 @@
     </Button>
   </div>
   <div class="grid gap-4">
-    <!-- New component -->
-    <RangeCalendar bind:value={rangeValue} class="rounded-md border" />
+    <Popover.Root openFocus>
+    <Popover.Trigger asChild let:builder>
+      <Button
+        variant="outline"
+        class={cn(
+          "w-[300px] justify-start text-left font-normal",
+          !value && "text-muted-foreground"
+        )}
+        builders={[builder]}
+      >
+        <CalendarIcon class="mr-2 h-4 w-4" />
+        {#if value && value.start}
+          {#if value.end}
+            {df.format(value.start.toDate(getLocalTimeZone()))} - {df.format(
+              value.end.toDate(getLocalTimeZone())
+            )}
+          {:else}
+            {df.format(value.start.toDate(getLocalTimeZone()))}
+          {/if}
+        {:else if startValue}
+          {df.format(startValue.toDate(getLocalTimeZone()))}
+        {:else}
+          Pick a date
+        {/if}
+      </Button>
+    </Popover.Trigger>
+    <Popover.Content class="w-auto p-0" align="start">
+      <RangeCalendar
+        bind:value
+        bind:startValue
+        initialFocus
+        numberOfMonths={2}
+        placeholder={value?.start}
+      />
+    </Popover.Content>
+  </Popover.Root>
+  
+    
 
     <Tabs.Root value="account" class="w-[400px]">
       <Tabs.List class="grid w-full grid-cols-2">
@@ -98,10 +201,19 @@
             
           </Card.Content>
           <Card.Footer>
-            <Button>Submit</Button>
-          </Card.Footer>
+            <Button on:click={handleFormSubmit}>Submit</Button>
+          </Card.Footer>          
         </Card.Root>
       </Tabs.Content>
     </Tabs.Root>
+    {#if totalKw !== null}
+      <Alert.Root>
+        <Terminal class="h-4 w-4" />
+        <Alert.Title>Total kW Usage</Alert.Title>
+        <Alert.Description>
+            Your total kW usage for the selected date range is: {totalKw}
+        </Alert.Description>
+      </Alert.Root>
+    {/if}
   </div>
 </div>
