@@ -128,22 +128,22 @@ const handleFormSubmit = async (event: Event) => {
 
   
 </script>
-<div style="position: absolute; top: 10px; right: 10px; padding: 10px;">
-    <div class="space-y-1">
-      <h4 class="text-sm font-medium leading-none">ESB Calculator</h4>
-      <p class="text-sm text-muted-foreground">
-        An ESB Usage calculator
-      </p>
-    </div>
-    <hr class="my-4" />
-    <div class="flex h-5 items-center space-x-4 text-sm">
-      <div>Blog</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Docs</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Source</div>
-    </div>
-  </div>
+<div style="position: absolute; top: 30px; right: 10px; padding: 10px;">
+    <div class="space-y-1">
+      <h4 class="text-sm font-medium leading-none">ESB Calculator</h4>
+        <p class="text-sm text-muted-foreground">
+          An ESB Usage calculator
+        </p>
+    </div>
+    <hr class="my-4" />
+    <div class="flex h-5 items-center space-x-4 text-sm">
+      <div>Blog</div>
+      <hr class="border-l-2 border-gray-300 h-4" />
+      <div>Docs</div>
+      <hr class="border-l-2 border-gray-300 h-4" />
+      <div>Source</div>
+    </div>
+</div>
 
 <div class="flex flex-col items-center justify-center min-h-screen relative">
   <div class="absolute top-4 right-4">
