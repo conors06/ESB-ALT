@@ -30,8 +30,8 @@ const df = new DateFormatter("en-US", {
 });
 
 let value: DateRange | undefined = {
-  start: new CalendarDate(2022, 1, 20),
-  end: new CalendarDate(2022, 1, 20).add({ days: 20 })
+  start: new CalendarDate(2022, 5, 16),
+  end: new CalendarDate(2022, 5, 16).add({ days: 20 })
 };
 
 let startValue: DateValue | undefined = undefined;

@@ -142,10 +142,7 @@ def calculate_kW_usage(startTime, endTime):
     return wantedkw_sum
 
 def convert_date_format(date_string):
-    # Parse the date string using the format "%b %d, %Y"
     date = datetime.strptime(date_string, "%b %d, %Y")
-
-    # Convert the date to the desired format: dd/mm/yy
     short_date = date.strftime("%d/%m/%y")
 
     return short_date
@@ -153,8 +150,6 @@ def convert_date_format(date_string):
 @app.route('/', methods=['POST'])
 def process_data():
     data = request.get_json()
-
-    # Extract the necessary data from the request payload
     startTimeIntermediary = data.get('startTime')
     startTime = convert_date_format(startTimeIntermediary)
     print(startTime)
@@ -167,7 +162,7 @@ def process_data():
     print(email)
     password = data.get('password')
     print(password)
-    #time.sleep(5)
+    time.sleep(5)
 
     esbnumber = load_smart_meter_stats_v2(email, password, mprn)
     total_kw = calculate_kW_usage(startTime, endTime)
