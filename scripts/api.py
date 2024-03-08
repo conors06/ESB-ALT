@@ -14,6 +14,9 @@ import plotly.graph_objs as go
 
 app = Flask(__name__)
 CORS(app)
+
+
+
 df = None
 if os.path.exists('../json_data.json'):
     os.remove('../json_data.json')
@@ -224,4 +227,4 @@ def get_chart_data(startTime, endTime):
     return chart_data
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
