@@ -78,6 +78,23 @@ const handleFormSubmit = async (event: Event) => {
     endTime: endDate // Use the module-level variable
   };
 
+  const response = await fetch("http://127.0.0.1:5000/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    const result = await response.json();
+    totalKw = result.total_kw; // Update the variable name to match the response field name
+    console.log(result);
+    // Handle the result as needed
+  } else {
+    console.error('Error:', response.status);
+    // Handle the error
+  }
   
   const response2 = await fetch('http://localhost:5000/chart', {
     method: "POST",
@@ -97,23 +114,7 @@ const handleFormSubmit = async (event: Event) => {
     // Handle the error
   }
 
-  const response = await fetch("http://127.0.0.1:5000/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
 
-  if (response.ok) {
-    const result = await response.json();
-    totalKw = result.total_kw; // Update the variable name to match the response field name
-    console.log(result);
-    // Handle the result as needed
-  } else {
-    console.error('Error:', response.status);
-    // Handle the error
-  }
 };
 
   
