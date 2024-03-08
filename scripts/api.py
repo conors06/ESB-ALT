@@ -163,26 +163,65 @@ def process_data():
     password = data.get('password')
     print(password)
     time.sleep(5)
-
+    print(startTime)
+    print(endTime)
+    time.sleep(5)
     esbnumber = load_smart_meter_stats_v2(email, password, mprn)
     total_kw = calculate_kW_usage(startTime, endTime)
+    chart_data = get_chart_data(startTime, endTime)
     print(total_kw)
+    print(chart_data)
     return {'total_kw': total_kw}
+    #return {'chart_data': chart_data}
 
-@app.route('/graph', methods=['GET'])
-def get_graph():
-    # Use the global DataFrame
+@app.route('/chart', methods=['POST'])
+def process_chart_data():
+    data = request.get_json()
+    startTimeIntermediary = data.get('startTime')
+    startTime = convert_date_format(startTimeIntermediary)
+    print(startTime)
+    endTimeIntermediary = data.get('endTime')
+    endTime = convert_date_format(endTimeIntermediary)
+    print(endTime)
+    time.sleep(5)
+    print(startTime)
+    print(endTime)
+    time.sleep(5)
+    chart_data = get_chart_data(startTime, endTime)
+    print(chart_data)
+    return {'chart_data': chart_data}
+def get_chart_data(startTime, endTime):
     global df
+    print(startTime)
+    print(endTime)
+    time.sleep(5)
+    start_datetime = datetime.strptime(startTime, '%d/%m/%y')
+    end_datetime = datetime.strptime(endTime, '%d/%m/%y')
+    try:
+        with open('../json_data.json') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        print(current_directory)
+        file_path = os.path.join(current_directory, '../json_data.json')
+        with open(file_path) as file:
+            data = json.load(file)
 
-    if df is not None:
-        fig = go.Figure(data=go.Scatter(x=df['Read Date and End Time'], y=df['Read Value'], mode='lines'))
-        fig.update_layout(title='Energy Usage Over Time', xaxis_title='Date and Time', yaxis_title='kW Usage')
-        json_data = fig.to_json()
-        print(json_data)
-        fig.show
-        return json_data
-    else:
-        return "'error': 'No data available'"
+    df = pd.DataFrame(data)
+    df.drop(columns=['MPRN', 'Read Type', 'Meter Serial Number'], inplace=True)
+    df['Read Date and End Time'] = pd.to_datetime(df['Read Date and End Time'], format='%d-%m-%Y %H:%M')
+    df['Read Value'] = pd.to_numeric(df['Read Value'])
+
+    date_range = (df['Read Date and End Time'] >= startTime) & (df['Read Date and End Time'] < endTime)
+    filtered_df = df[date_range]
+
+
+    chart_data = {
+        'labels': filtered_df['Read Date and End Time'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
+        'data': filtered_df['Read Value'].tolist()
+    }
+
+    return chart_data
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
