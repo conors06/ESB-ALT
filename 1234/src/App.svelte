@@ -28,6 +28,7 @@
   let chart_data: number | null = null;
   let startDate: string = '';
   let endDate: string = '';
+  let chartInstance: Plotly.PlotlyHTMLElement;
 
 const df = new DateFormatter("en-US", {
   dateStyle: "medium"
@@ -107,7 +108,7 @@ const handleFormSubmit = async (event: Event) => {
   if (response2.ok) {
     const result = await response2.json();
     chart_data = result.chart_data; // Update the variable name to match the response field name
-    console.log(result);
+    console.log(chart_data);
     // Handle the result as needed
   } else {
     console.error('Error:', response2.status);
@@ -122,6 +123,37 @@ const handleFormSubmit = async (event: Event) => {
   $: {
     if (totalKw !== null) {
       console.log(totalKw); // Make sure the value is correct in the console
+    }
+  }
+
+  $: {
+    if (chart_data !== null && typeof chart_data === 'object') {
+      const { data, labels } = chart_data;
+
+      const trace: Partial<Plotly.ScatterData> = {
+        x: labels,
+        y: data,
+        type: 'scatter',
+        mode: 'lines',
+      };
+
+      const layout = {
+        title: 'Energy Usage',
+        xaxis: {
+          title: 'Time',
+        },
+        yaxis: {
+          title: 'Energy Usage (kW)',
+        },
+      };
+
+      const config = {
+        responsive: true,
+      };
+
+      Plotly.newPlot('chart', [trace], layout, config).then((instance) => {
+        chartInstance = instance;
+      });
     }
   }
 
@@ -259,3 +291,4 @@ const handleFormSubmit = async (event: Event) => {
     {/if}
   </div>
 </div>
+<div id="chart"></div>
