@@ -46,7 +46,7 @@ def show_chart(filtered_df):
 @app.route('/chart_data')
 def get_chart_data():
     startTime = "22/05/22"
-    endTime = "23/05/22"
+    endTime = "29/08/22"
 
     chart_data = process_data(startTime, endTime)
 
