@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { fade, blur } from 'svelte/transition';
-  import { LineChart } from 'lucide-svelte';
+  import { fade, blur, scale, fly, slide } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
+  import { LineChart } from 'lucide-svelte';
   import CalendarIcon from "lucide-svelte/icons/calendar";
   import { Separator } from "$lib/components/ui/separator";
   import Sun from "lucide-svelte/icons/sun";
@@ -33,97 +33,93 @@
   let endDate: string = '';
   let chartInstance: Plotly.PlotlyHTMLElement;
   let showModal = false;
-
+  let isTyping = false; // Add a flag for typing animation
 
   const df = new DateFormatter("en-US", {
-  dateStyle: "medium"
-});
+    dateStyle: "medium"
+  });
 
-let value: DateRange | undefined = {
-  start: new CalendarDate(2022, 5, 16),
-  end: new CalendarDate(2022, 5, 16).add({ days: 20 })
-};
-
-let startValue: DateValue | undefined = undefined;
-
-$: {
-  if (value && value.start && value.end) {
-    // Update the module-level variables
-    startDate = df.format(value.start.toDate(getLocalTimeZone()));
-    endDate = df.format(value.end.toDate(getLocalTimeZone()));
-
-    console.log(startDate);
-    console.log(endDate);
-  }
-}
-
-let mprnInput: HTMLInputElement;
-let emailInput: HTMLInputElement;
-let passwordInput: HTMLInputElement;
-
-const handleFormSubmit = async (event: Event) => {
-  event.preventDefault();
-
-  emailInput = document.getElementById('email') as HTMLInputElement;
-  mprnInput = document.getElementById('mprn') as HTMLInputElement;
-  passwordInput = document.getElementById('current') as HTMLInputElement;
-
-  console.log(emailInput.value);
-  console.log(mprnInput.value);
-  console.log(passwordInput.value);
-  console.log(startDate); // Use the module-level variable
-  console.log(endDate); // Use the module-level variable
-
-  console.log("Submitting");
-
-  const data = {
-    mprn: mprnInput.value,
-    email: emailInput.value,
-    password: passwordInput.value,
-    startTime: startDate, // Use the module-level variable
-    endTime: endDate // Use the module-level variable
+  let value: DateRange | undefined = {
+    start: new CalendarDate(2022, 5, 16),
+    end: new CalendarDate(2022, 5, 16).add({ days: 20 })
   };
 
-  const response = await fetch("http://127.0.0.1:5000/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+  let startValue: DateValue | undefined = undefined;
 
-  if (response.ok) {
-    const result = await response.json();
-    totalKw = result.total_kw; // Update the variable name to match the response field name
-    console.log(result);
-    // Handle the result as needed
-  } else {
-    console.error('Error:', response.status);
-    // Handle the error
-  }
-  
-  const response2 = await fetch('http://localhost:5000/chart', {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+  $: {
+    if (value && value.start && value.end) {
+      // Update the module-level variables
+      startDate = df.format(value.start.toDate(getLocalTimeZone()));
+      endDate = df.format(value.end.toDate(getLocalTimeZone()));
 
-  if (response2.ok) {
-    const result = await response2.json();
-    chart_data = result.chart_data; // Update the variable name to match the response field name
-    console.log(chart_data);
-    // Handle the result as needed
-  } else {
-    console.error('Error:', response2.status);
-    // Handle the error
+      console.log(startDate);
+      console.log(endDate);
+    }
   }
 
+  let mprnInput: HTMLInputElement;
+  let emailInput: HTMLInputElement;
+  let passwordInput: HTMLInputElement;
 
-};
+  const handleFormSubmit = async (event: Event) => {
+    event.preventDefault();
 
-  
+    emailInput = document.getElementById('email') as HTMLInputElement;
+    mprnInput = document.getElementById('mprn') as HTMLInputElement;
+    passwordInput = document.getElementById('current') as HTMLInputElement;
+
+    console.log(emailInput.value);
+    console.log(mprnInput.value);
+    console.log(passwordInput.value);
+    console.log(startDate); // Use the module-level variable
+    console.log(endDate); // Use the module-level variable
+
+    console.log("Submitting");
+
+    const data = {
+      mprn: mprnInput.value,
+      email: emailInput.value,
+      password: passwordInput.value,
+      startTime: startDate, // Use the module-level variable
+      endTime: endDate // Use the module-level variable
+    };
+
+    const response = await fetch("http://127.0.0.1:5000/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      totalKw = result.total_kw; // Update the variable name to match the response field name
+      console.log(result);
+      // Handle the result as needed
+    } else {
+      console.error('Error:', response.status);
+      // Handle the error
+    }
+
+    const response2 = await fetch('http://localhost:5000/chart', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response2.ok) {
+      const result = await response2.json();
+      chart_data = result.chart_data; // Update the variable name to match the response field name
+      console.log(chart_data);
+      // Handle the result as needed
+    } else {
+      console.error('Error:', response2.status);
+      // Handle the error
+    }
+  };
 
   $: {
     if (totalKw !== null) {
@@ -161,45 +157,36 @@ const handleFormSubmit = async (event: Event) => {
       });
     }
   }
-  function toggleModal() {
-    showModal = !showModal;
-  }
-
-  function handleOutsideClick(event: MouseEvent) {
-    const modal = document.querySelector('.modal');
-    if (event.target === modal) {
-        toggleModal();
-    }
-}
-
-function handleChartDataLoad(data: any) {
-    chart_data = data;
-    if (chart_data !== null && typeof chart_data === 'object') {
-        toggleModal();
-    }
-}
-
-  
 </script>
-<div style="position: absolute; top: 30px; right: 10px; padding: 10px;">
-    <div class="space-y-1">
-      <h4 class="text-sm font-medium leading-none">ESB Calculator</h4>
-        <p class="text-sm text-muted-foreground">
-          An ESB Usage calculator
-        </p>
-    </div>
-    <hr class="my-4" />
-    <div class="flex h-5 items-center space-x-4 text-sm">
-      <div>Blog</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Docs</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Source</div>
-    </div>
+
+<div class="navbar bg-white dark:bg-black" in:fade={{ delay: 100, duration: 500 }}>
+  <a class="btn btn-ghost btn rounded-full text-lg dark:text-white"
+     style="border-color: black; background-color: black; color: white; margin-right: 10px;"
+     href="https://example.com"
+     on:mouseenter={(e) => e.currentTarget.classList.add('animate-pulse')}
+     on:mouseleave={(e) => e.currentTarget.classList.remove('animate-pulse')}>
+    Example Link 1
+  </a>
+  <a class="btn btn-ghost btn rounded-full text-lg dark:text-white"
+     style="border-color: black; background-color: black; color: white;"
+     href="https://example.org"
+     on:mouseenter={(e) => e.currentTarget.classList.add('animate-pulse')}
+     on:mouseleave={(e) => e.currentTarget.classList.remove('animate-pulse')}>
+    Example Link 2
+  </a>
+</div>
+
+<div style="position: absolute; top: 30px; right: 10px; padding: 10px;" in:slide={{ duration: 500, easing: quintOut }}>
+  <div class="space-y-1">
+    <h4 class="text-sm font-medium leading-none">ESB Calculator</h4>
+    <p class="text-sm text-muted-foreground">
+      An ESB Electricity Usage Calculator
+    </p>
+  </div>
 </div>
 
 <div class="flex flex-col items-center justify-center min-h-screen relative">
-  <div class="absolute top-4 right-4">
+  <div class="absolute top-4 right-4" in:scale={{ delay: 200, duration: 500, easing: quintOut }}>
     <Button on:click={toggleMode} variant="outline" size="icon">
       <Sun
         class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
@@ -313,44 +300,16 @@ function handleChartDataLoad(data: any) {
   </div>
 </div>
 
-
-<main>
-  <Button on:click={handleChartDataLoad}>
-    <LineChart class="mr-2 h-4 w-4" />
-    Show Graph
-  </Button>
-
-  {#if showModal && chart_data !== null && typeof chart_data === 'object'}
-    <div class="modal" on:click={handleOutsideClick}>
-      <div class="modal-content">
-        <div id="chart">
-          <!-- Your chart rendering code here -->
-          <!-- Use chart_data to render the chart -->
-        </div>
-      </div>
-    </div>
-  {/if}
-</main>
 <div id="chart"></div>
 <style>
-  .modal {
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
+  .navbar {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
 
-  .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    height: 90%;
+  .btn {
+    padding: 8px 16px;
+    font-size: 14px;
   }
 </style>
