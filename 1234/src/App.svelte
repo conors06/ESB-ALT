@@ -1,10 +1,7 @@
 <script lang="ts">
-<<<<<<< HEAD
   import { fade, blur, scale, fly, slide } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
   import { LineChart } from 'lucide-svelte';
-=======
->>>>>>> 70b9cbd3bc7002c61a957149bf4b90f7a67f21c4
   import CalendarIcon from "lucide-svelte/icons/calendar";
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
@@ -34,11 +31,6 @@
   let startDate: string = '';
   let endDate: string = '';
   let chartInstance: Plotly.PlotlyHTMLElement;
-<<<<<<< HEAD
-  let showModal = false;
-  let isTyping = false; // Add a flag for typing animation
-=======
->>>>>>> 70b9cbd3bc7002c61a957149bf4b90f7a67f21c4
 
   const df = new DateFormatter("en-US", {
     dateStyle: "medium"
@@ -162,7 +154,6 @@
       });
     }
   }
-<<<<<<< HEAD
 </script>
 
 <div class="navbar bg-white dark:bg-black" in:fade={{ delay: 100, duration: 500 }}>
@@ -188,25 +179,6 @@
     <p class="text-sm text-muted-foreground">
       An ESB Electricity Usage Calculator
     </p>
-=======
-
-  
-</script>
-<div class="drawer">
-  <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
-    <!-- Page content here -->
-    <label for="my-drawer" class="btn btn-primary drawer-button">Open drawer</label>
-  </div> 
-  <div class="drawer-side">
-    <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-      <!-- Sidebar content here -->
-      <li><a href="/1234/src/info.svelte">Sidebar Item 1</a></li>
-      <li><a href="/1234/src/docs.svelte">Sidebar Item 2</a></li>
-      
-    </ul>
->>>>>>> 70b9cbd3bc7002c61a957149bf4b90f7a67f21c4
   </div>
 </div>
 
@@ -324,7 +296,6 @@
     {/if}
   </div>
 </div>
-<<<<<<< HEAD
 
 <div id="chart"></div>
 <style>
@@ -339,6 +310,3 @@
     font-size: 14px;
   }
 </style>
-=======
-<div id="chart"></div>
->>>>>>> 70b9cbd3bc7002c61a957149bf4b90f7a67f21c4
