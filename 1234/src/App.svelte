@@ -32,8 +32,6 @@
   let startDate: string = '';
   let endDate: string = '';
   let chartInstance: Plotly.PlotlyHTMLElement;
-  let showModal = false;
-
 
   const df = new DateFormatter("en-US", {
   dateStyle: "medium"
@@ -161,23 +159,6 @@ const handleFormSubmit = async (event: Event) => {
       });
     }
   }
-  function toggleModal() {
-    showModal = !showModal;
-  }
-
-  function handleOutsideClick(event: MouseEvent) {
-    const modal = document.querySelector('.modal');
-    if (event.target === modal) {
-        toggleModal();
-    }
-}
-
-function handleChartDataLoad(data: any) {
-    chart_data = data;
-    if (chart_data !== null && typeof chart_data === 'object') {
-        toggleModal();
-    }
-}
 
   
 </script>
@@ -274,7 +255,7 @@ function handleChartDataLoad(data: any) {
             </div>
           </Card.Content>
           <Card.Footer>
-            <Button>Submit</Button>
+            <Button on:click={handleFormSubmit}>Submit</Button>
           </Card.Footer>
         </Card.Root>
       </Tabs.Content>
@@ -312,45 +293,4 @@ function handleChartDataLoad(data: any) {
     {/if}
   </div>
 </div>
-
-
-<main>
-  <Button on:click={handleChartDataLoad}>
-    <LineChart class="mr-2 h-4 w-4" />
-    Show Graph
-  </Button>
-
-  {#if showModal && chart_data !== null && typeof chart_data === 'object'}
-    <div class="modal" on:click={handleOutsideClick}>
-      <div class="modal-content">
-        <div id="chart">
-          <!-- Your chart rendering code here -->
-          <!-- Use chart_data to render the chart -->
-        </div>
-      </div>
-    </div>
-  {/if}
-</main>
 <div id="chart"></div>
-<style>
-  .modal {
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-  }
-
-  .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    height: 90%;
-  }
-</style>
