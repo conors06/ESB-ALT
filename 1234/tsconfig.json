@@ -8,12 +8,14 @@
     "allowJs": true,
     "checkJs": true,
     "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "src/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

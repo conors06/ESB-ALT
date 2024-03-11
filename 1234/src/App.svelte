@@ -3,6 +3,7 @@
   import { quintOut } from 'svelte/easing';
   import { LineChart } from 'lucide-svelte';
   import CalendarIcon from "lucide-svelte/icons/calendar";
+  import { Separator } from "$lib/components/ui/separator";
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
   import Terminal from "lucide-svelte/icons/terminal";
@@ -31,6 +32,8 @@
   let startDate: string = '';
   let endDate: string = '';
   let chartInstance: Plotly.PlotlyHTMLElement;
+  let showModal = false;
+  let isTyping = false; // Add a flag for typing animation
 
   const df = new DateFormatter("en-US", {
     dateStyle: "medium"
@@ -258,7 +261,7 @@
             </div>
           </Card.Content>
           <Card.Footer>
-            <Button on:click={handleFormSubmit}>Submit</Button>
+            <Button>Submit</Button>
           </Card.Footer>
         </Card.Root>
       </Tabs.Content>
