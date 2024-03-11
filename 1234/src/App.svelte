@@ -1,9 +1,5 @@
 <script lang="ts">
-  import { fade, blur } from 'svelte/transition';
-  import { LineChart } from 'lucide-svelte';
-  import { quintOut } from 'svelte/easing';
   import CalendarIcon from "lucide-svelte/icons/calendar";
-  import { Separator } from "$lib/components/ui/separator";
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
   import Terminal from "lucide-svelte/icons/terminal";
@@ -162,21 +158,21 @@ const handleFormSubmit = async (event: Event) => {
 
   
 </script>
-<div style="position: absolute; top: 30px; right: 10px; padding: 10px;">
-    <div class="space-y-1">
-      <h4 class="text-sm font-medium leading-none">ESB Calculator</h4>
-        <p class="text-sm text-muted-foreground">
-          An ESB Usage calculator
-        </p>
-    </div>
-    <hr class="my-4" />
-    <div class="flex h-5 items-center space-x-4 text-sm">
-      <div>Blog</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Docs</div>
-      <hr class="border-l-2 border-gray-300 h-4" />
-      <div>Source</div>
-    </div>
+<div class="drawer">
+  <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+  <div class="drawer-content">
+    <!-- Page content here -->
+    <label for="my-drawer" class="btn btn-primary drawer-button">Open drawer</label>
+  </div> 
+  <div class="drawer-side">
+    <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+      <!-- Sidebar content here -->
+      <li><a href="/1234/src/info.svelte">Sidebar Item 1</a></li>
+      <li><a href="/1234/src/docs.svelte">Sidebar Item 2</a></li>
+      
+    </ul>
+  </div>
 </div>
 
 <div class="flex flex-col items-center justify-center min-h-screen relative">

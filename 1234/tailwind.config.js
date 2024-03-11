@@ -1,8 +1,11 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
 
+
+
 /** @type {import('tailwindcss').Config} */
 const config = {
 	darkMode: ["class"],
+	plugins: [require('daisyui')],
 	content: ["./src/**/*.{html,js,svelte,ts}"],
   safelist: ["dark"],
 	theme: {
