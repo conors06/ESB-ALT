@@ -176,7 +176,6 @@
     <div class="mx-auto w-full max-w-8xl">
       <Drawer.Header>
         <Drawer.Title>Docs</Drawer.Title>
-        <Drawer.Description>More Docs.</Drawer.Description>
       </Drawer.Header>
       <Resizable.PaneGroup
         direction="horizontal"
